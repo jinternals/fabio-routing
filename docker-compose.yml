@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:latest
+    command: consul agent -dev -ui -client 0.0.0.0
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    networks:
+      fabio-network:
+        ipv4_address: 23.5.0.2
+
+  fabio:
+    image: fabiolb/fabio:latest
+    ports:
+      - "9999:9999"
+      - "9998:9998"
+    volumes:
+      - "./config/fabio.properties:/etc/fabio/fabio.properties"
+    networks:
+      fabio-network:
+        ipv4_address: 23.5.0.3
+
+networks:
+  fabio-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 23.5.0.0/16
